@@ -467,11 +467,11 @@
     .sem-overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0) 45%, rgba(0,0,0,0.85)); }
     .sem-content {
       position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: space-between;
-      padding: 5.5rem 1.5rem 1.75rem; pointer-events: none; opacity: 0; user-select: none;
+      padding: 1.5rem 1.5rem 1.75rem; pointer-events: none; opacity: 0; user-select: none;
     }
-    @media (min-width: 640px)  { .sem-content { padding: 6rem 2rem 2rem; } }
-    @media (min-width: 768px)  { .sem-content { padding: 7rem 3rem 3rem; } }
-    @media (min-width: 1024px) { .sem-content { padding: 7rem 3.5rem 3.5rem; } }
+    @media (min-width: 640px)  { .sem-content { padding: 1.5rem 2rem 2rem; } }
+    @media (min-width: 768px)  { .sem-content { padding: 1.5rem 3.5rem 3rem; } }
+    @media (min-width: 1024px) { .sem-content { padding: 1.5rem 3.5rem 3.5rem; } }
     .sem-title {
       position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
       gap: clamp(0.6rem, 2vw, 1.5rem); pointer-events: none;
@@ -789,15 +789,15 @@
 
         <!-- About info: revealed once the media is fully open -->
         <div id="sem-media-content" class="sem-content">
-          <!-- Top Perimeter: Refined Monochrome Headline -->
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/10 pb-3">
-            <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
-              PERSUING MY BACHELORS IN CSE-AIML
-            </h3>
-            <span class="text-[10px] font-mono tracking-wider uppercase text-neutral-400 shrink-0">
-              BASED IN INDIA &bull; WORLDWIDE
-            </span>
-          </div>
+<!-- Top Perimeter: headline level with the Dive In button, faint line beneath both -->
+<div>
+  <div style="height:2.75rem;display:flex;align-items:center;" class="pr-32 md:pr-44">
+    <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
+      PURSUING MY BACHELORS IN CSE-AIML
+    </h3>
+  </div>
+  <div style="height:1px;margin-top:0.75rem;background:rgba(255,255,255,0.12);"></div>
+</div>
 
           <!-- Center Zone: open so the artwork stays unobscured -->
           <div class="flex-1 pointer-events-none min-h-[140px] md:min-h-[200px]"></div>
@@ -1495,11 +1495,11 @@
       <form id="contact-form" onsubmit="submitContactForm(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Your Name</label>
-          <input type="text" id="contact-name" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
+          <input type="text" id="contact-name" required placeholder="Bruce Wayne" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Email Address</label>
-          <input type="email" id="contact-email" required placeholder="john@company.com" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
+          <input type="email" id="contact-email" required placeholder="batman@company.com" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Purpose</label>
@@ -2044,20 +2044,20 @@
      link   : credential / verify URL  (optional, shown in the large viewer)
      ============================================================ */
   const CERTIFICATES = [
-    { src: 'assets/certificates/cert-01.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-02.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-03.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-04.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-05.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-06.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-07.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-08.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-09.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-10.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-11.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-12.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-13.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-14.jpg', title: '', issuer: '', date: '', link: '' }
+    { src: 'assets/certificates/cert-01.jpg', title: 'Build with AI', issuer: 'Google for Developers', date: 'October 2026', link: '' },
+    { src: 'assets/certificates/cert-02.png', title: 'Ethical Hacking and Cyber Security', issuer: 'VaultOfCodes', date: 'September 2026', link: '' },
+    { src: 'assets/certificates/cert-03.jpg', title: 'Website UI/UX Designing using ChatGPT', issuer: 'simplilearn', date: 'September 2026', link: '' },
+    { src: 'assets/certificates/cert-04.jpg', title: 'Introduction to Generative AI', issuer: 'simplilearn', date: 'June 2026', link: '' },
+    { src: 'assets/certificates/cert-05.jpg', title: 'Describe the concepts of CyberSecurity', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-06.jpg', title: 'Computer vision solutions in Azure', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-07.jpg', title: 'AI basics and Generative AI', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-08.jpg', title: 'Using Microsoft Copilot', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-09.jpg', title: 'Introduction to Microsoft security solutions', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-10.jpg', title: 'Security, compliance and identity concepts', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-11.jpg', title: 'Learn more on AI concepts', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-12.jpg', title: 'Microsoft 365 : Copilot chat', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-13.jpg', title: 'Everyday work with agents', issuer: 'Microsoft', date: 'May 2026', link: '' },
+    { src: 'assets/certificates/cert-14.png', title: 'NSPC 2026', issuer: 'Ministry of Education', date: 'September 2026', link: '' }
   ];
 
   (function () {
