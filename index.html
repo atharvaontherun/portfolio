@@ -444,11 +444,121 @@
       .cert-lb, .cert-zoom { transition: none; }
       .cert-caption.swap { animation: none; }
     }
+
+    /* ============================================================
+       ABOUT — SCROLL-TO-EXPAND (landscape card -> full-bleed)
+       ============================================================ */
+    #about { background: #0D0D0D; }
+    .sem-sticky { background: #0D0D0D; position: sticky; top: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; z-index: 10; }
+    .sem-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; will-change: opacity; }
+    .sem-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .sem-bg .shade { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.82); }
+    .sem-media {
+      position: absolute; inset: 0; z-index: 10; background: #07090E; overflow: hidden;
+      clip-path: inset(19% 25% 19% 25% round 24px);
+      will-change: clip-path;
+    }
+    .sem-media > img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      object-position: 72% 35%; transform: scale(1.15); transform-origin: center;
+      will-change: transform; backface-visibility: hidden;
+    }
+    #sem-media-blur { filter: blur(18px); pointer-events: none; }
+    .sem-overlay { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0) 45%, rgba(0,0,0,0.85)); }
+    .sem-content {
+      position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: space-between;
+      padding: 5.5rem 1.5rem 1.75rem; pointer-events: none; opacity: 0; user-select: none;
+    }
+    @media (min-width: 640px)  { .sem-content { padding: 6rem 2rem 2rem; } }
+    @media (min-width: 768px)  { .sem-content { padding: 7rem 3rem 3rem; } }
+    @media (min-width: 1024px) { .sem-content { padding: 7rem 3.5rem 3.5rem; } }
+    .sem-title {
+      position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
+      gap: clamp(0.6rem, 2vw, 1.5rem); pointer-events: none;
+    }
+    .sem-title h2 {
+      font-weight: 900; text-transform: uppercase; line-height: 1; letter-spacing: -0.01em; color: #fff;
+      font-size: clamp(2.25rem, 8vw, 6.5rem); text-shadow: 0 2px 30px rgba(0, 0, 0, 0.45); will-change: transform, opacity;
+    }
+    .sem-prompt {
+      position: absolute; left: 0; right: 0; bottom: 2rem; z-index: 20; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-align: center;
+    }
+    #sem-date { font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: #a3a3a3; }
+    #sem-scroll-prompt {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #737373;
+    }
+    #sem-scroll-prompt .dot { width: 6px; height: 6px; border-radius: 9999px; background: #e5e5e5; animation: semPulse 1.8s ease-in-out infinite; }
+    @keyframes semPulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { #sem-scroll-prompt .dot { animation: none; } }
+
+    /* ============================================================
+       "DIVE IN" MENU BUTTON + SLIDE-IN PANEL
+       ============================================================ */
+    html.menu-open { overflow: hidden; }
+    .dive-btn {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 47;
+      height: 2.75rem; padding: 0 1rem 0 1.2rem;
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      border-radius: 9999px; background: #111; color: #fff; border: 1px solid rgba(255, 255, 255, 0.16);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.01em;
+      cursor: pointer; transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    @media (min-width: 768px) { .dive-btn { right: 3.5rem; } }
+    .dive-btn:hover { background: #1c1c1c; border-color: rgba(255, 255, 255, 0.4); }
+    .dive-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; box-shadow: 0 0 0 5px #111; }
+    .dive-label { position: relative; display: block; height: 1.25em; line-height: 1.25em; overflow: hidden; min-width: 3.6em; text-align: left; }
+    .dive-label span { display: block; transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1); }
+    .dive-btn.is-open .dive-label span { transform: translateY(-100%); }
+    .dive-icon { width: 1.05rem; height: 1.05rem; transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1); }
+    .dive-btn.is-open .dive-icon { transform: rotate(135deg); }
+
+    .menu-overlay {
+      position: fixed; inset: 0; z-index: 46; background: rgba(0, 0, 0, 0.62);
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0s linear 0.75s;
+    }
+    .menu-overlay.is-open { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .menu-panel {
+      position: absolute; left: 0; top: 0; bottom: 0; width: min(100%, max(420px, 34vw));
+      background: #0D0D0D; color: #fff; border-right: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 2rem clamp(1.5rem, 3vw, 2.75rem) 2rem;
+      transform: translateX(-100%); transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
+      overflow-y: auto;
+    }
+    .menu-overlay.is-open .menu-panel { transform: none; }
+    .menu-brand { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em; color: #fff; text-decoration: none; }
+    .menu-brand i { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; background: #fff; }
+    .menu-links { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; margin: 3rem 0; }
+    .menu-links a {
+      display: inline-flex; align-items: flex-start; gap: 0.6rem; text-decoration: none; color: #fff;
+      font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.08;
+      font-size: clamp(2.1rem, 4.6vw, 3.9rem);
+      opacity: 0; transform: translateY(26px);
+      transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+    }
+    .menu-overlay.is-open .menu-links a {
+      opacity: 1; transform: none;
+      transition-delay: calc(0.3s + var(--i) * 70ms), calc(0.3s + var(--i) * 70ms), 0s;
+    }
+    .menu-links a sup { margin-top: 0.55em; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.12em; color: #7a7a7a; transition: color 0.25s ease; }
+    .menu-links:hover a:not(:hover) { color: #5a5a5a; }
+    .menu-links a.is-current sup, .menu-links a:hover sup { color: #fff; }
+    .menu-links a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+    .menu-foot { border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 1.5rem; }
+    .menu-foot h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: #7a7a7a; margin-bottom: 1rem; }
+    .menu-foot div { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+    .menu-foot a { color: #d4d4d4; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.2s ease; }
+    .menu-foot a:hover, .menu-foot a:focus-visible { color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      .menu-panel, .menu-overlay, .menu-links a, .dive-icon, .dive-label span { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+    }
   </style>
 </head>
 <body class="antialiased text-[#111] bg-[#FAFAFA]">
-
-  <!-- ============ LOADING SCREEN (paste right after the opening <body ...> tag) ============ -->
+<!-- ============ LOADING SCREEN (paste right after the opening <body ...> tag) ============ -->
 <style>
   html.is-loading { overflow: hidden; }
   #loader {
@@ -473,7 +583,7 @@
   }
   .loader-name {
     margin-top: 1.5rem; font-size: clamp(0.7rem, 1.6vw, 0.95rem); font-weight: 600;
-    letter-spacing: 0.5em; padding-left: 0.5em;
+    letter-spacing: 0.5em; padding-left: 0.5em; /* offsets trailing tracking so it stays centred */
     text-transform: uppercase; color: #737373;
   }
   .loader-bar {
@@ -522,10 +632,12 @@
 
   function tick(now) {
     var elapsed = now - start;
+    // creep towards 90% while loading; allow 100% once the page has loaded
     var target = pageLoaded ? 100 : Math.min(90, (elapsed / 2500) * 90);
     shown += (target - shown) * 0.08;
     if (pageLoaded && target - shown < 0.5) shown = 100;
-    countEl.textContent = Math.min(100, Math.round(shown));
+    var n = Math.min(100, Math.round(shown));
+    countEl.textContent = n;
     barEl.style.transform = 'scaleX(' + (shown / 100).toFixed(3) + ')';
     if ((shown >= 100 && elapsed >= MIN_MS) || elapsed >= MAX_MS) {
       countEl.textContent = 100; barEl.style.transform = 'scaleX(1)';
@@ -538,12 +650,43 @@
 })();
 </script>
 <!-- ============ END LOADING SCREEN ============ -->
- 
+
+  <!-- "Dive In" menu button (fixed) -->
+  <button id="dive-btn" class="dive-btn" type="button" aria-expanded="false" aria-controls="menu-panel">
+    <span class="dive-label"><span>Dive In</span><span aria-hidden="true">Close</span></span>
+    <svg class="dive-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg>
+  </button>
+
+  <!-- Slide-in menu panel -->
+  <div id="menu-overlay" class="menu-overlay" aria-hidden="true">
+    <nav id="menu-panel" class="menu-panel" aria-label="Main menu" inert>
+      <div>
+        <a href="#home" class="menu-brand" data-close><i></i><span>ATHARVA MEHTA</span></a>
+        <div class="menu-links">
+          <a href="#home" data-close data-section="home" style="--i:0">HOME<sup>01</sup></a>
+          <a href="#about" data-close data-section="about" style="--i:1">ABOUT ME<sup>02</sup></a>
+          <a href="#experience" data-close data-section="experience" style="--i:2">EXPERIENCE<sup>03</sup></a>
+          <a href="#certificates" data-close data-section="certificates" style="--i:3">CERTIFICATES<sup>04</sup></a>
+          <a href="#contact" data-close data-action="contact" data-section="contact" style="--i:4">CONTACT<sup>05</sup></a>
+        </div>
+      </div>
+      <div class="menu-foot">
+        <h4>Socials</h4>
+        <div>
+          <a href="https://www.instagram.com/athvrvaaa/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.linkedin.com/in/atharvamehta2007/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/atharvaontherun" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+
   <!-- Notification Toast Container -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- BEGIN: Navigation Header -->
-  <header class="relative z-40 bg-[#FAFAFA] transition-all duration-300 w-full pt-6 pb-4 px-6 md:px-14 max-w-[1400px] mx-auto flex items-center justify-between" data-purpose="site-navigation">
+  <header class="relative z-40 bg-[#FAFAFA] transition-all duration-300 w-full pt-6 pb-4 px-6 md:px-14 md:pr-[13rem] max-w-[1400px] mx-auto flex items-center justify-between" data-purpose="site-navigation">
     <!-- Brand Wordmark -->
     <a class="group font-extrabold text-xl tracking-tight text-black flex items-center" href="#home">
       <span class="inline-block w-2 h-2 bg-black rounded-full mr-1 transition-transform group-hover:scale-150 duration-200"></span>
@@ -551,7 +694,7 @@
     </a>
 
     <!-- Center Navigation Links (Pill with no unwanted wrapping) -->
-    <nav class="hidden md:flex items-center gap-1 p-1 bg-white/95 border border-[#E2E2E2] rounded-full shadow-sm text-xs font-semibold tracking-wider text-neutral-600">
+    <nav class="hidden xl:flex items-center gap-1 p-1 bg-white/95 border border-[#E2E2E2] rounded-full shadow-sm text-xs font-semibold tracking-wider text-neutral-600">
       <a id="nav-home" class="nav-link px-4 py-2 rounded-full border border-neutral-300 text-black hover:border-black transition whitespace-nowrap" href="#home">HOME</a>
       <a id="nav-about" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#about">ABOUT ME</a>
       <a id="nav-experience" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#experience">EXPERIENCE</a>
@@ -559,7 +702,7 @@
     </nav>
 
     <!-- Right Social & Menu Links -->
-    <div class="flex items-center gap-1.5 md:gap-2 p-1.5 bg-white/95 border border-[#E2E2E2] rounded-full shadow-sm">
+    <div class="hidden md:flex items-center gap-1.5 md:gap-2 p-1.5 bg-white/95 border border-[#E2E2E2] rounded-full shadow-sm">
       <!-- Instagram -->
       <a class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-neutral-100 transition text-neutral-700 hover:text-black" href="https://www.instagram.com/athvrvaaa/" target="_blank" rel="noopener" title="Instagram">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="18" rx="5" ry="5" width="18" x="3" y="3"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
@@ -574,38 +717,9 @@
       <a class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-neutral-100 transition text-neutral-700 hover:text-black" href="https://github.com/atharvaontherun" target="_blank" rel="noopener" title="GitHub">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
       </a>
-
-      <!-- Mobile Hamburger Button -->
-      <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Open Menu" class="md:hidden w-8 h-8 rounded-full flex items-center justify-center hover:bg-neutral-100 transition text-neutral-700 ml-1">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" x2="20" y1="7" y2="7"></line><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="17" y2="17"></line></svg>
-      </button>
     </div>
   </header>
 
-  <!-- Mobile Drawer Menu -->
-  <div id="mobile-drawer" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex justify-end">
-    <div id="mobile-drawer-content" class="w-4/5 max-w-sm bg-white h-full p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl">
-      <div>
-        <div class="flex items-center justify-between pb-6 border-b border-neutral-200">
-          <span class="font-extrabold text-lg tracking-tight">•ATHARVA MEHTA</span>
-          <button onclick="toggleMobileMenu()" class="w-8 h-8 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-700 hover:border-black">
-            ✕
-          </button>
-        </div>
-        <nav class="flex flex-col gap-4 mt-8 text-base font-bold tracking-wider">
-          <a onclick="toggleMobileMenu()" href="#home" class="py-2 border-b border-neutral-100 hover:text-neutral-500">HOME</a>
-          <a onclick="toggleMobileMenu()" href="#about" class="py-2 border-b border-neutral-100 hover:text-neutral-500">ABOUT ME</a>
-          <a onclick="toggleMobileMenu()" href="#experience" class="py-2 border-b border-neutral-100 hover:text-neutral-500">EXPERIENCE</a>
-          <a onclick="toggleMobileMenu()" href="#certificates" class="py-2 border-b border-neutral-100 hover:text-neutral-500">CERTIFICATES</a>
-          <a onclick="toggleMobileMenu(); openContactModal();" href="javascript:void(0)" class="py-2 text-black hover:underline">CONTACT</a>
-        </nav>
-      </div>
-      <div class="pt-6 border-t border-neutral-200">
-        <p class="text-xs uppercase tracking-widest text-neutral-400 mb-3">ATHARVA MEHTA</p>
-        <p class="text-xs text-neutral-600">Developer</p>
-      </div>
-    </div>
-  </div>
   <!-- END: Navigation -->
 
   <!-- BEGIN: Hero Section -->
@@ -657,120 +771,73 @@
   <!-- END: Hero Section -->
 
   <!-- BEGIN: About Section (ScrollExpandMedia Component) -->
+  <section class="relative w-full bg-[#0D0D0D] text-white" id="about" style="min-height: 280vh;">
+    <div class="sem-sticky">
 
-  
-  <section class="relative w-full bg-[#0D0D0D] text-white" id="about" style="min-height: 200vh;">
-    <div class="sticky top-0 w-full h-[100dvh] overflow-hidden flex flex-col items-center justify-start z-10">
-      <!-- Background Ambient with dynamic opacity: 1 - scrollProgress (Previous Starry Night Castle Background) -->
-      <div id="sem-bg-img" class="absolute inset-0 z-0 h-full w-full pointer-events-none transition-opacity duration-150 ease-out" style="will-change: opacity; transform: translateZ(0);">
-        <img
-          src="assets/dr15.jpg?v=10"
-          alt="Monochrome Starry Night Castle Background"
-          class="w-full h-full object-cover object-center"
-        />
-        <div class="absolute inset-0 bg-black/25"></div>
+      <!-- Ambient background (fades out as the media expands) -->
+      <div id="sem-bg-img" class="sem-bg" aria-hidden="true">
+        <img src="assets/dr15.jpg?v=10" alt="">
+        <div class="shade"></div>
       </div>
 
-      <!-- Centered Interactive Stage Container (Exact from React Component) -->
-      <div class="container mx-auto flex flex-col items-center justify-start relative z-10 w-full h-full">
-        <div class="flex flex-col items-center justify-center w-full h-[100dvh] relative">
-          
-          <!-- Expanding Media Card (Closed state: 300px x 400px, expands on scroll) -->
-          <div
-            id="sem-media-container"
-            class="absolute z-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl overflow-hidden shadow-2xl transition-none bg-[#07090E]"
-            style="width: 300px; height: 400px; max-width: 95vw; max-height: 85vh; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9); border: 1px solid rgba(255,255,255,0.35); will-change: width, height; backface-visibility: hidden;"
-          >
-            <!-- Media Image Container: fits 100% of the box without any letterboxing or cropping -->
-            <div class="relative w-full h-full overflow-hidden rounded-xl flex items-center justify-center bg-[#07090E]">
-              <!-- Crisp Base Image (GPU accelerated) -->
-              <img
-                id="sem-media-img"
-                src="assets/abouty.jpg?v=14"
-                alt="Atharva Mehta - Ascendance &amp; Digital Craft"
-                class="w-full h-full object-cover rounded-xl transition-none"
-                style="transform: scale(1.02) translateZ(0); transform-origin: center; backface-visibility: hidden;"
-              />
-              <!-- Pre-blurred Layer for 120 FPS GPU-accelerated Unblur (fades out opacity smoothly on scroll) -->
-              <img
-                id="sem-media-blur"
-                src="assets/abouty.jpg?v=14"
-                alt=""
-                aria-hidden="true"
-                class="absolute inset-0 w-full h-full object-cover rounded-xl transition-none pointer-events-none"
-                style="filter: blur(18px); transform: scale(1.08) translateZ(0); transform-origin: center; opacity: 1; will-change: opacity; backface-visibility: hidden;"
-              />
-              <!-- Subtle Gradient Overlay: protects top/bottom legibility while keeping the center 100% transparent -->
-              <div id="sem-media-overlay" class="absolute inset-0 bg-gradient-to-b from-black/75 via-transparent to-black/85 rounded-xl transition-opacity duration-150 pointer-events-none"></div>
+      <!-- Expanding media: starts as a landscape card, grows to fill the whole viewport -->
+      <div id="sem-media-container" class="sem-media">
+        <img id="sem-media-img" src="assets/abouty.jpg?v=14" alt="Atharva Mehta - Ascendance &amp; Digital Craft">
+        <!-- Pre-blurred layer: fades out to give the "focus pull" as it expands -->
+        <img id="sem-media-blur" src="assets/abouty.jpg?v=14" alt="" aria-hidden="true">
+        <div id="sem-media-overlay" class="sem-overlay"></div>
 
-              <!-- Minimal Aesthetic About Info - Perimeter Layout with Empty Center -->
-              <div
-                id="sem-media-content"
-                class="absolute inset-0 z-20 flex flex-col justify-between p-5 sm:p-7 md:p-9 pointer-events-none opacity-0 transition-all duration-300 select-none"
-              >
-                <!-- Top Perimeter: Refined Monochrome Headline -->
-                <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/10 pb-3">
-                  <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
-                    PERSUING MY BACHELORS IN CSE-AIML
-                  </h3>
-                  <span class="text-[10px] font-mono tracking-wider uppercase text-neutral-400 shrink-0">
-                    BASED IN INDIA &bull; WORLDWIDE
-                  </span>
-                </div>
+        <!-- About info: revealed once the media is fully open -->
+        <div id="sem-media-content" class="sem-content">
+          <!-- Top Perimeter: Refined Monochrome Headline -->
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/10 pb-3">
+            <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
+              PERSUING MY BACHELORS IN CSE-AIML
+            </h3>
+            <span class="text-[10px] font-mono tracking-wider uppercase text-neutral-400 shrink-0">
+              BASED IN INDIA &bull; WORLDWIDE
+            </span>
+          </div>
 
-                <!-- Center Zone: COMPLETELY OPEN & EMPTY - 100% unobscured view of artwork -->
-                <div class="flex-1 pointer-events-none min-h-[140px] md:min-h-[200px]"></div>
+          <!-- Center Zone: open so the artwork stays unobscured -->
+          <div class="flex-1 pointer-events-none min-h-[140px] md:min-h-[200px]"></div>
 
-                <!-- Bottom Perimeter: Disciplines, About Summary & Monochrome CTAs -->
-                <div class="pt-3 border-t border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                  <!-- About Me Summary & Disciplines -->
-                  <div class="max-w-xl space-y-2">
-                    <div class="flex items-center gap-2.5">
-                      <span class="text-[10px] font-bold tracking-widest uppercase text-neutral-300">DISCIPLINE &amp; CRAFT</span>
-                      <div class="h-px bg-white/15 w-6"></div>
-                      <span class="text-[10px] font-mono tracking-widest uppercase text-neutral-400">JAVA &bull; PYTHON &bull; SQL &bull; APIs &bull; WEB DESIGN </span>
-                    </div>
-                    <p class="text-xs sm:text-[12px] font-medium leading-relaxed tracking-wider uppercase text-neutral-300">
-                      I’m a Mathematics and Computer Science student interested in Software Development and AI, with a focus on turning ideas into working solutions.
-                    </p>
-                  </div>
-
-                  <!-- Monochrome Action Buttons -->
-                  <div class="flex items-center gap-3 shrink-0 pt-1 md:pt-0">
-                    <a href="javascript:void(0)" onclick="openContactModal()" class="pointer-events-auto px-5 py-2.5 rounded-full bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-wider uppercase transition-all duration-200 inline-flex items-center gap-2">
-                      <span>GET IN TOUCH</span>
-                      <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
+          <!-- Bottom Perimeter: Disciplines, About Summary & CTA -->
+          <div class="pt-3 border-t border-white/10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div class="max-w-xl space-y-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-[10px] font-bold tracking-widest uppercase text-neutral-300">DISCIPLINE &amp; CRAFT</span>
+                <div class="h-px bg-white/15 w-6"></div>
+                <span class="text-[10px] font-mono tracking-widest uppercase text-neutral-400">JAVA &bull; PYTHON &bull; SQL &bull; APIs &bull; WEB DESIGN </span>
               </div>
-            </div>
-
-            <!-- Card Subtitles (Translate Outward) -->
-            <div class="flex flex-col items-center text-center relative z-10 mt-4 pointer-events-none">
-              <p id="sem-date" class="text-xl md:text-2xl text-neutral-300 font-semibold tracking-wider uppercase transition-none drop-shadow">
-                BACKGROUND &amp; VISION
-              </p>
-              <p id="sem-scroll-prompt" class="text-neutral-400 font-medium text-xs tracking-widest uppercase transition-none mt-1 drop-shadow">
-                SCROLL TO EXPAND
+              <p class="text-xs sm:text-[12px] font-medium leading-relaxed tracking-wider uppercase text-neutral-300">
+                I’m a Mathematics and Computer Science student interested in Software Development and AI, with a focus on turning ideas into working solutions.
               </p>
             </div>
+            <div class="flex items-center gap-3 shrink-0 pt-1 md:pt-0">
+              <a href="javascript:void(0)" onclick="openContactModal()" class="pointer-events-auto px-5 py-2.5 rounded-full bg-white text-black hover:bg-neutral-200 text-xs font-bold tracking-wider uppercase transition-all duration-200 inline-flex items-center gap-2">
+                <span>GET IN TOUCH</span>
+                <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+            </div>
           </div>
-
-          <!-- Splitting Title Header (ABOUT translates left, ME translates right) -->
-          <div class="flex items-center justify-center text-center gap-2 sm:gap-4 w-full relative z-10 pointer-events-none flex-col" style="will-change: transform; backface-visibility: hidden;">
-            <h2 id="sem-title-first" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tight transition-none drop-shadow-2xl" style="will-change: transform, opacity;">
-              ABOUT
-            </h2>
-            <h2 id="sem-title-rest" class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tight transition-none drop-shadow-2xl" style="will-change: transform, opacity;">
-              ME
-            </h2>
-          </div>
-
         </div>
       </div>
+
+      <!-- Title: sits on the card, drifts apart and fades as it opens -->
+      <div class="sem-title">
+        <h2 id="sem-title-first">ABOUT</h2>
+        <h2 id="sem-title-rest">ME</h2>
+      </div>
+
+      <!-- Caption + scroll prompt -->
+      <div class="sem-prompt">
+        <p id="sem-date">BACKGROUND &amp; VISION</p>
+        <p id="sem-scroll-prompt"><span class="dot"></span>SCROLL TO EXPAND</p>
+      </div>
+
     </div>
   </section>
   <!-- END: About Section (ScrollExpandMedia Component) -->
@@ -821,7 +888,7 @@
 
     <!-- Top Minimalist Editorial HUD Bar -->
     <header
-      class="relative z-30 w-full px-6 md:px-14 pt-6 pb-4 flex items-center justify-between border-b border-white/[0.08] backdrop-blur-md bg-[#070709]/80"
+      class="relative z-30 w-full px-6 md:px-14 pr-36 md:pr-[11.5rem] pt-6 pb-4 flex items-center justify-between border-b border-white/[0.08] backdrop-blur-md bg-[#070709]/80"
     >
       <div class="flex items-center gap-4">
         <span
@@ -1302,7 +1369,7 @@
 <section id="certificates" class="cert-section" data-purpose="certificates-section" aria-labelledby="cert-heading">
   <div class="cert-inner">
     <header class="cert-head">
-      <span class="cert-eyebrow">ATHARVA MEHTA's</span>
+      <span class="cert-eyebrow">ARCHIVE</span>
       <h2 id="cert-heading" class="cert-title">CERTIFICATES</h2>
       <p class="cert-intro">A collection of the certificates I've earned along the way. Drag, swipe, or use the arrows to browse.</p>
     </header>
@@ -1803,19 +1870,6 @@
       showToast('Copied email: hello@example.com');
     }
 
-    function toggleMobileMenu() {
-      const drawer = document.getElementById('mobile-drawer');
-      const content = document.getElementById('mobile-drawer-content');
-      const isOpen = !drawer.classList.contains('pointer-events-none');
-
-      if (isOpen) {
-        drawer.classList.add('opacity-0', 'pointer-events-none');
-        content.classList.add('translate-x-full');
-      } else {
-        drawer.classList.remove('opacity-0', 'pointer-events-none');
-        content.classList.remove('translate-x-full');
-      }
-    }
 
     // Toast notification helper
     function showToast(message) {
@@ -1992,8 +2046,8 @@
      ============================================================ */
   const CERTIFICATES = [
     { src: 'assets/certificates/cert-01.jpg', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-02.png', title: '', issuer: '', date: '', link: '' },
-    { src: 'assets/certificates/cert-03.png', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-02.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-03.jpg', title: '', issuer: '', date: '', link: '' },
     { src: 'assets/certificates/cert-04.jpg', title: '', issuer: '', date: '', link: '' },
     { src: 'assets/certificates/cert-05.jpg', title: '', issuer: '', date: '', link: '' },
     { src: 'assets/certificates/cert-06.jpg', title: '', issuer: '', date: '', link: '' },
@@ -2192,6 +2246,56 @@
     // ---- Init ----
     updateUI(); paint(); goTo(0, false);
     window.addEventListener('load', function () { goTo(index, false); schedule(); });
+  })();
+  </script>
+  <!-- MENU: "Dive In" button + slide-in panel -->
+  <script>
+  (function () {
+    var btn = document.getElementById('dive-btn');
+    var ov = document.getElementById('menu-overlay');
+    var panel = document.getElementById('menu-panel');
+    if (!btn || !ov || !panel) return;
+    var root = document.documentElement, isOpen = false;
+
+    function setOpen(state, restoreFocus) {
+      isOpen = state;
+      btn.classList.toggle('is-open', state);
+      btn.setAttribute('aria-expanded', String(state));
+      ov.classList.toggle('is-open', state);
+      ov.setAttribute('aria-hidden', String(!state));
+      root.classList.toggle('menu-open', state);
+      panel.inert = !state;
+      if (state) setTimeout(function () { var f = panel.querySelector('.menu-links a'); if (f) f.focus({ preventScroll: true }); }, 60);
+      else if (restoreFocus) btn.focus({ preventScroll: true });
+    }
+    btn.addEventListener('click', function () { setOpen(!isOpen, true); });
+    ov.addEventListener('click', function (e) { if (e.target === ov) setOpen(false, true); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen) setOpen(false, true); });
+
+    // Links: close first (unlocks scrolling), then the browser follows the anchor
+    panel.querySelectorAll('[data-close]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        setOpen(false, false);
+        if (a.dataset.action === 'contact') {
+          e.preventDefault();
+          setTimeout(function () { if (typeof openContactModal === 'function') openContactModal(); }, 350);
+        }
+      });
+    });
+    window.toggleMobileMenu = function () { setOpen(!isOpen, false); };
+
+    // Highlight the section currently in view
+    var links = {};
+    panel.querySelectorAll('[data-section]').forEach(function (a) { links[a.dataset.section] = a; });
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          Object.keys(links).forEach(function (k) { links[k].classList.toggle('is-current', k === en.target.id); });
+        });
+      }, { rootMargin: '-20% 0px -60% 0px' });
+      Object.keys(links).forEach(function (k) { var el = document.getElementById(k); if (el) io.observe(el); });
+    }
   })();
   </script>
   <!-- StringTune runtime (inlined so index.html is fully self-contained) -->
@@ -4243,141 +4347,93 @@ ${ks(i,"  ")}
   </script>
   <!-- ABOUT: ScrollExpandMedia (inlined) -->
   <script>
-// ScrollExpandMedia Vanilla JS Component - Zero Lag & High Performance 60/120 FPS
+// ScrollExpandMedia — vanilla JS. A landscape card opens smoothly to full-bleed as you scroll.
+// Uses clip-path (GPU-friendly) + eased, inertial progress so it never feels jumpy.
 function initScrollExpandMedia() {
   const section = document.getElementById('about');
   if (!section) return;
 
   const bgImg = document.getElementById('sem-bg-img');
-  const mediaContainer = document.getElementById('sem-media-container');
+  const media = document.getElementById('sem-media-container');
   const mediaImg = document.getElementById('sem-media-img');
   const mediaBlur = document.getElementById('sem-media-blur');
-  const mediaOverlay = document.getElementById('sem-media-overlay');
+  const overlay = document.getElementById('sem-media-overlay');
   const titleFirst = document.getElementById('sem-title-first');
   const titleRest = document.getElementById('sem-title-rest');
-  const dateTag = document.getElementById('sem-date');
-  const scrollPrompt = document.getElementById('sem-scroll-prompt');
-  const mediaContent = document.getElementById('sem-media-content');
+  const prompt = document.querySelector('.sem-prompt');
+  const content = document.getElementById('sem-media-content');
+  if (!media) return;
 
-  const ASPECT_RATIO = 1024 / 546; // ≈ 1.875457875
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
-  let isMobile = window.innerWidth < 768;
-  window.addEventListener('resize', () => {
-    isMobile = window.innerWidth < 768;
-    renderFrame();
-  }, { passive: true });
+  // Starting card size, expressed as the inset (in %) on each side of the viewport
+  function startInset() {
+    const w = window.innerWidth;
+    if (w < 640) return { x: 9, y: 25 };    // phone: ~82vw x 50vh
+    if (w < 1024) return { x: 16, y: 21 };  // tablet: ~68vw
+    return { x: 25, y: 19 };                // desktop: 50vw x 62vh
+  }
 
-  let rafScheduled = false;
+  let target = 0, current = 0, raf = 0;
 
-  function applyFrame(progress) {
-    // Initial closed shape: exact 300px x 400px as before
-    const startW = isMobile ? 280 : 300;
-    const startH = isMobile ? 360 : 400;
+  function apply(p) {
+    const e = easeInOut(p);
+    const s = startInset();
+    const x = (s.x * (1 - e)).toFixed(3);
+    const y = (s.y * (1 - e)).toFixed(3);
+    const r = (24 * (1 - e)).toFixed(2);
+    media.style.clipPath = `inset(${y}% ${x}% ${y}% ${x}% round ${r}px)`;
 
-    // Fully expanded size matching the image aspect ratio (1024 / 546)
-    const maxWByViewport = window.innerWidth * 0.94;
-    const maxWByHeight = (window.innerHeight * 0.86) * ASPECT_RATIO;
-    const endW = Math.min(maxWByViewport, maxWByHeight);
-    const endH = endW / ASPECT_RATIO;
-
-    const currentW = startW + progress * (endW - startW);
-    const currentH = startH + progress * (endH - startH);
-    const textTranslateX = (progress * (isMobile ? 180 : 150)).toFixed(1);
-
-    // Hardware accelerated unblur: smoothly fades out the pre-blurred layer
+    const sc = (1.15 - 0.15 * e).toFixed(4);
+    if (mediaImg) mediaImg.style.transform = `scale(${sc})`;
     if (mediaBlur) {
-      if (progress < 0.45) {
-        mediaBlur.style.visibility = 'visible';
-        mediaBlur.style.opacity = Math.max(0, 1 - progress * 2.3).toFixed(3);
-      } else {
-        mediaBlur.style.opacity = '0';
-        mediaBlur.style.visibility = 'hidden';
-      }
+      mediaBlur.style.transform = `scale(${(1.15 - 0.07 * e).toFixed(4)})`;
+      mediaBlur.style.opacity = Math.max(0, 1 - e * 2.2).toFixed(3);
+      mediaBlur.style.visibility = e < 0.46 ? 'visible' : 'hidden';
     }
+    if (overlay) overlay.style.opacity = (0.85 - 0.45 * e).toFixed(3);
+    if (bgImg) bgImg.style.opacity = Math.max(0, 1 - e * 1.4).toFixed(3);
 
-    // Media container sizing: direct 1:1 hardware composited size update
-    if (mediaContainer) {
-      mediaContainer.style.width = `${currentW.toFixed(1)}px`;
-      mediaContainer.style.height = `${currentH.toFixed(1)}px`;
-      const borderOpacity = (0.1 + (1 - progress) * 0.25).toFixed(2);
-      mediaContainer.style.borderColor = `rgba(255, 255, 255, ${borderOpacity})`;
-    }
+    // Title drifts apart and fades
+    const drift = (e * 22).toFixed(2);
+    const tOp = Math.max(0, 1 - e * 1.9).toFixed(3);
+    if (titleFirst) { titleFirst.style.transform = `translate3d(-${drift}vw,0,0)`; titleFirst.style.opacity = tOp; }
+    if (titleRest) { titleRest.style.transform = `translate3d(${drift}vw,0,0)`; titleRest.style.opacity = tOp; }
+    if (prompt) prompt.style.opacity = Math.max(0, 1 - e * 3).toFixed(3);
 
-    // Background ambient image fade
-    if (bgImg) {
-      bgImg.style.opacity = Math.max(0, 1 - progress * 1.3).toFixed(3);
-    }
-
-    // Media overlay contrast
-    if (mediaOverlay) {
-      mediaOverlay.style.opacity = Math.max(0.3, 0.8 - progress * 0.4).toFixed(3);
-    }
-
-    // Title words translate outward and fade
-    const titleOpacity = Math.max(0, 1 - progress * 1.6).toFixed(3);
-    if (titleFirst) {
-      titleFirst.style.transform = `translateX(-${textTranslateX}vw) translateZ(0)`;
-      titleFirst.style.opacity = titleOpacity;
-    }
-    if (titleRest) {
-      titleRest.style.transform = `translateX(${textTranslateX}vw) translateZ(0)`;
-      titleRest.style.opacity = titleOpacity;
-    }
-
-    // Subtitles translate outward and fade quickly
-    const subOpacity = Math.max(0, 1 - progress * 2.8).toFixed(3);
-    if (dateTag) {
-      dateTag.style.transform = `translateX(-${textTranslateX}vw)`;
-      dateTag.style.opacity = subOpacity;
-    }
-    if (scrollPrompt) {
-      scrollPrompt.style.transform = `translateX(${textTranslateX}vw)`;
-      scrollPrompt.style.opacity = subOpacity;
-    }
-
-    // Content reveals smoothly as media finishes expanding
-    if (mediaContent) {
-      if (progress >= 0.85) {
-        const contentFade = Math.min(1, (progress - 0.85) / 0.15);
-        mediaContent.style.opacity = contentFade.toFixed(3);
-        mediaContent.style.pointerEvents = contentFade > 0.5 ? 'auto' : 'none';
-        mediaContent.style.transform = `translateY(${((1 - contentFade) * 12).toFixed(1)}px)`;
-      } else {
-        mediaContent.style.opacity = '0';
-        mediaContent.style.pointerEvents = 'none';
-        mediaContent.style.transform = 'translateY(15px)';
-      }
+    // About details fade in once fully open
+    if (content) {
+      const f = clamp01((e - 0.82) / 0.18);
+      content.style.opacity = f.toFixed(3);
+      content.style.transform = `translateY(${((1 - f) * 14).toFixed(1)}px)`;
+      content.style.pointerEvents = f > 0.5 ? 'auto' : 'none';
     }
   }
 
-  function renderFrame() {
-    rafScheduled = false;
+  function readTarget() {
     const rect = section.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    const totalDist = section.offsetHeight - windowHeight;
-
-    if (totalDist <= 0) return;
-
-    const scrolled = -rect.top;
-    let target = 0;
-    if (scrolled > 0) {
-      const rawRatio = scrolled / totalDist;
-      // Complete expansion smoothly near the end of track so next section transitions immediately
-      target = Math.min(Math.max(rawRatio / 0.90, 0), 1);
-    }
-
-    applyFrame(target);
+    const track = section.offsetHeight - window.innerHeight;
+    if (track <= 0) { target = 0; return; }
+    const raw = -rect.top / track;
+    // Expand over the first ~65% of the scroll track, then hold fully open
+    target = clamp01(raw / 0.65);
   }
 
-  function onScroll() {
-    if (!rafScheduled) {
-      rafScheduled = true;
-      requestAnimationFrame(renderFrame);
-    }
+  function loop() {
+    raf = 0;
+    if (reduced) current = target;
+    else current += (target - current) * 0.12;
+    if (Math.abs(target - current) < 0.0004) current = target;
+    apply(current);
+    if (current !== target) raf = requestAnimationFrame(loop);
   }
+  function kick() { readTarget(); if (!raf) raf = requestAnimationFrame(loop); }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  renderFrame();
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', kick, { passive: true });
+  readTarget(); current = target; apply(current);
 }
 
 if (document.readyState === 'loading') {

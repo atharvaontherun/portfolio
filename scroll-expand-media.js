@@ -1,138 +1,90 @@
-// ScrollExpandMedia Vanilla JS Component - Zero Lag & High Performance 60/120 FPS
+// ScrollExpandMedia — vanilla JS. A landscape card opens smoothly to full-bleed as you scroll.
+// Uses clip-path (GPU-friendly) + eased, inertial progress so it never feels jumpy.
 export function initScrollExpandMedia() {
   const section = document.getElementById('about');
   if (!section) return;
 
   const bgImg = document.getElementById('sem-bg-img');
-  const mediaContainer = document.getElementById('sem-media-container');
+  const media = document.getElementById('sem-media-container');
   const mediaImg = document.getElementById('sem-media-img');
   const mediaBlur = document.getElementById('sem-media-blur');
-  const mediaOverlay = document.getElementById('sem-media-overlay');
+  const overlay = document.getElementById('sem-media-overlay');
   const titleFirst = document.getElementById('sem-title-first');
   const titleRest = document.getElementById('sem-title-rest');
-  const dateTag = document.getElementById('sem-date');
-  const scrollPrompt = document.getElementById('sem-scroll-prompt');
-  const mediaContent = document.getElementById('sem-media-content');
+  const prompt = document.querySelector('.sem-prompt');
+  const content = document.getElementById('sem-media-content');
+  if (!media) return;
 
-  const ASPECT_RATIO = 1024 / 546; // ≈ 1.875457875
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
-  let isMobile = window.innerWidth < 768;
-  window.addEventListener('resize', () => {
-    isMobile = window.innerWidth < 768;
-    renderFrame();
-  }, { passive: true });
+  // Starting card size, expressed as the inset (in %) on each side of the viewport
+  function startInset() {
+    const w = window.innerWidth;
+    if (w < 640) return { x: 9, y: 25 };    // phone: ~82vw x 50vh
+    if (w < 1024) return { x: 16, y: 21 };  // tablet: ~68vw
+    return { x: 25, y: 19 };                // desktop: 50vw x 62vh
+  }
 
-  let rafScheduled = false;
+  let target = 0, current = 0, raf = 0;
 
-  function applyFrame(progress) {
-    // Initial closed shape: exact 300px x 400px as before
-    const startW = isMobile ? 280 : 300;
-    const startH = isMobile ? 360 : 400;
+  function apply(p) {
+    const e = easeInOut(p);
+    const s = startInset();
+    const x = (s.x * (1 - e)).toFixed(3);
+    const y = (s.y * (1 - e)).toFixed(3);
+    const r = (24 * (1 - e)).toFixed(2);
+    media.style.clipPath = `inset(${y}% ${x}% ${y}% ${x}% round ${r}px)`;
 
-    // Fully expanded size matching the image aspect ratio (1024 / 546)
-    const maxWByViewport = window.innerWidth * 0.94;
-    const maxWByHeight = (window.innerHeight * 0.86) * ASPECT_RATIO;
-    const endW = Math.min(maxWByViewport, maxWByHeight);
-    const endH = endW / ASPECT_RATIO;
-
-    const currentW = startW + progress * (endW - startW);
-    const currentH = startH + progress * (endH - startH);
-    const textTranslateX = (progress * (isMobile ? 180 : 150)).toFixed(1);
-
-    // Hardware accelerated unblur: smoothly fades out the pre-blurred layer
+    const sc = (1.15 - 0.15 * e).toFixed(4);
+    if (mediaImg) mediaImg.style.transform = `scale(${sc})`;
     if (mediaBlur) {
-      if (progress < 0.45) {
-        mediaBlur.style.visibility = 'visible';
-        mediaBlur.style.opacity = Math.max(0, 1 - progress * 2.3).toFixed(3);
-      } else {
-        mediaBlur.style.opacity = '0';
-        mediaBlur.style.visibility = 'hidden';
-      }
+      mediaBlur.style.transform = `scale(${(1.15 - 0.07 * e).toFixed(4)})`;
+      mediaBlur.style.opacity = Math.max(0, 1 - e * 2.2).toFixed(3);
+      mediaBlur.style.visibility = e < 0.46 ? 'visible' : 'hidden';
     }
+    if (overlay) overlay.style.opacity = (0.85 - 0.45 * e).toFixed(3);
+    if (bgImg) bgImg.style.opacity = Math.max(0, 1 - e * 1.4).toFixed(3);
 
-    // Media container sizing: direct 1:1 hardware composited size update
-    if (mediaContainer) {
-      mediaContainer.style.width = `${currentW.toFixed(1)}px`;
-      mediaContainer.style.height = `${currentH.toFixed(1)}px`;
-      const borderOpacity = (0.1 + (1 - progress) * 0.25).toFixed(2);
-      mediaContainer.style.borderColor = `rgba(255, 255, 255, ${borderOpacity})`;
-    }
+    // Title drifts apart and fades
+    const drift = (e * 22).toFixed(2);
+    const tOp = Math.max(0, 1 - e * 1.9).toFixed(3);
+    if (titleFirst) { titleFirst.style.transform = `translate3d(-${drift}vw,0,0)`; titleFirst.style.opacity = tOp; }
+    if (titleRest) { titleRest.style.transform = `translate3d(${drift}vw,0,0)`; titleRest.style.opacity = tOp; }
+    if (prompt) prompt.style.opacity = Math.max(0, 1 - e * 3).toFixed(3);
 
-    // Background ambient image fade
-    if (bgImg) {
-      bgImg.style.opacity = Math.max(0, 1 - progress * 1.3).toFixed(3);
-    }
-
-    // Media overlay contrast
-    if (mediaOverlay) {
-      mediaOverlay.style.opacity = Math.max(0.3, 0.8 - progress * 0.4).toFixed(3);
-    }
-
-    // Title words translate outward and fade
-    const titleOpacity = Math.max(0, 1 - progress * 1.6).toFixed(3);
-    if (titleFirst) {
-      titleFirst.style.transform = `translateX(-${textTranslateX}vw) translateZ(0)`;
-      titleFirst.style.opacity = titleOpacity;
-    }
-    if (titleRest) {
-      titleRest.style.transform = `translateX(${textTranslateX}vw) translateZ(0)`;
-      titleRest.style.opacity = titleOpacity;
-    }
-
-    // Subtitles translate outward and fade quickly
-    const subOpacity = Math.max(0, 1 - progress * 2.8).toFixed(3);
-    if (dateTag) {
-      dateTag.style.transform = `translateX(-${textTranslateX}vw)`;
-      dateTag.style.opacity = subOpacity;
-    }
-    if (scrollPrompt) {
-      scrollPrompt.style.transform = `translateX(${textTranslateX}vw)`;
-      scrollPrompt.style.opacity = subOpacity;
-    }
-
-    // Content reveals smoothly as media finishes expanding
-    if (mediaContent) {
-      if (progress >= 0.85) {
-        const contentFade = Math.min(1, (progress - 0.85) / 0.15);
-        mediaContent.style.opacity = contentFade.toFixed(3);
-        mediaContent.style.pointerEvents = contentFade > 0.5 ? 'auto' : 'none';
-        mediaContent.style.transform = `translateY(${((1 - contentFade) * 12).toFixed(1)}px)`;
-      } else {
-        mediaContent.style.opacity = '0';
-        mediaContent.style.pointerEvents = 'none';
-        mediaContent.style.transform = 'translateY(15px)';
-      }
+    // About details fade in once fully open
+    if (content) {
+      const f = clamp01((e - 0.82) / 0.18);
+      content.style.opacity = f.toFixed(3);
+      content.style.transform = `translateY(${((1 - f) * 14).toFixed(1)}px)`;
+      content.style.pointerEvents = f > 0.5 ? 'auto' : 'none';
     }
   }
 
-  function renderFrame() {
-    rafScheduled = false;
+  function readTarget() {
     const rect = section.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    const totalDist = section.offsetHeight - windowHeight;
-
-    if (totalDist <= 0) return;
-
-    const scrolled = -rect.top;
-    let target = 0;
-    if (scrolled > 0) {
-      const rawRatio = scrolled / totalDist;
-      // Complete expansion smoothly near the end of track so next section transitions immediately
-      target = Math.min(Math.max(rawRatio / 0.90, 0), 1);
-    }
-
-    applyFrame(target);
+    const track = section.offsetHeight - window.innerHeight;
+    if (track <= 0) { target = 0; return; }
+    const raw = -rect.top / track;
+    // Expand over the first ~65% of the scroll track, then hold fully open
+    target = clamp01(raw / 0.65);
   }
 
-  function onScroll() {
-    if (!rafScheduled) {
-      rafScheduled = true;
-      requestAnimationFrame(renderFrame);
-    }
+  function loop() {
+    raf = 0;
+    if (reduced) current = target;
+    else current += (target - current) * 0.12;
+    if (Math.abs(target - current) < 0.0004) current = target;
+    apply(current);
+    if (current !== target) raf = requestAnimationFrame(loop);
   }
+  function kick() { readTarget(); if (!raf) raf = requestAnimationFrame(loop); }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  renderFrame();
+  window.addEventListener('scroll', kick, { passive: true });
+  window.addEventListener('resize', kick, { passive: true });
+  readTarget(); current = target; apply(current);
 }
 
 if (document.readyState === 'loading') {
