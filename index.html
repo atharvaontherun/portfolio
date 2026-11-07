@@ -555,6 +555,129 @@
     @media (prefers-reduced-motion: reduce) {
       .menu-panel, .menu-overlay, .menu-links a, .dive-icon, .dive-label span { transition-duration: 0.01s !important; transition-delay: 0s !important; }
     }
+
+    /* ============================================================
+       WEBSITES — ACCORDION GALLERY (vanilla port of React Bits AccordionGallery)
+       Tall slabs in a row; hovering one opens it. CSS transitions instead of GSAP:
+       no dependency, GPU-friendly, retargets smoothly. Stacks vertically on phones.
+       ============================================================ */
+    .sites-section {
+      position: relative; background: #F2F2F2; color: #111; border-top: 1px solid #e3e3e3;
+      padding: clamp(4.5rem, 10vw, 9rem) 0 clamp(4rem, 8vw, 7rem); overflow-x: clip;
+    }
+    .sites-inner { max-width: 1400px; margin: 0 auto; padding-inline: clamp(1.5rem, 4vw, 3.5rem); }
+    .sites-head { margin-bottom: clamp(2rem, 5vw, 4rem); }
+    .sites-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #737373;
+    }
+    .sites-eyebrow::before { content: ""; width: 2rem; height: 1px; background: #111; opacity: 0.4; }
+    .sites-title {
+      font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.88;
+      font-size: clamp(2rem, 9.2vw, 8.5rem); margin: 0;
+    }
+    .sites-intro { margin-top: 1.5rem; max-width: 26rem; font-size: 0.9rem; line-height: 1.7; color: #525252; }
+    @media (min-width: 768px) { .sites-intro { margin-left: auto; margin-top: 1.75rem; } }
+
+    .accordion-gallery {
+      --ag-accent: #ffffff; --ag-overlay: #0a0a0a; --ag-text: #ffffff;
+      --ag-gap: 10px; --ag-radius: 16px; --ag-media-size: 320px;
+      --ag-dur: 0.6s; --ag-ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+      display: flex; flex-direction: row; gap: var(--ag-gap);
+      width: 100%; height: 500px; perspective: 1400px; perspective-origin: 50% 50%;
+    }
+    @media (max-width: 1023px) { .accordion-gallery { height: 460px; } }
+    @media (max-width: 640px)  { .accordion-gallery { flex-direction: column; height: 580px; perspective: none; } }
+    .accordion-gallery.no-anim, .accordion-gallery.no-anim * { transition: none !important; }
+
+    .ag-panel {
+      position: relative; flex: 1 1 0; min-width: 0; min-height: 0; overflow: hidden;
+      border-radius: var(--ag-radius); cursor: pointer; outline: none; background: #0a0a0a;
+      box-shadow: 0 10px 30px -18px rgba(0, 0, 0, 0.8);
+      transform-origin: center center; -webkit-tap-highlight-color: transparent;
+      transition: flex-grow var(--ag-dur) var(--ag-ease), transform var(--ag-dur) var(--ag-ease);
+    }
+    @media (max-width: 640px) { .ag-panel { min-height: 56px; } }
+    .ag-panel:focus-visible { box-shadow: 0 0 0 2px var(--ag-accent), 0 0 0 4px #111, 0 10px 30px -18px rgba(0,0,0,0.8); }
+    .ag-frame { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: inherit; }
+    .ag-media {
+      position: absolute; top: 50%; left: 50%; display: block;
+      width: var(--ag-media-size); height: 100%;
+      transform: translate(-50%, -50%);
+      transition: transform var(--ag-dur) var(--ag-ease), filter var(--ag-dur) var(--ag-ease);
+      will-change: transform, filter; backface-visibility: hidden;
+    }
+    @media (max-width: 640px) { .ag-media { width: 100%; height: var(--ag-media-size); } }
+    .ag-media img { display: block; width: 100%; height: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+    .ag-grad {
+      position: absolute; inset: 0; pointer-events: none; display: block;
+      background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 10, 0.85) 100%);
+    }
+    .ag-dim {
+      position: absolute; inset: 0; pointer-events: none; display: block;
+      background: var(--ag-overlay); opacity: 0.35; transition: opacity var(--ag-dur) var(--ag-ease);
+    }
+    .ag-panel.is-active .ag-dim { opacity: 0; }
+    .ag-ph {
+      position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 1rem;
+      text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; color: #8a8a8a; word-break: break-all;
+      background: repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 14px), #161616;
+    }
+    .ag-panel.is-empty .ag-ph { display: flex; }
+
+    /* Caption: [bar] Name [Visit Site] with the description underneath, anchored bottom-left */
+    .ag-label {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 22px;
+    }
+    .ag-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .ag-bar {
+      flex: 0 0 auto; width: 3px; height: 26px; border-radius: 3px; background: var(--ag-accent);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    }
+    .ag-text {
+      flex: 0 1 auto; min-width: 0; color: var(--ag-text); font-weight: 600; letter-spacing: 0.01em;
+      font-size: clamp(1rem, 1.4vw, 1.4rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+    }
+    .ag-visit {
+      flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.5rem; pointer-events: auto; margin-left: 6px;
+      padding: 0.5rem 0.9rem; border-radius: 9999px; background: #fff; color: #0a0a0a; text-decoration: none;
+      font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap;
+      transition: background-color 0.2s ease, opacity 0.3s var(--ag-ease), transform 0.3s var(--ag-ease), visibility 0s linear 0.3s;
+    }
+    .ag-visit:hover { background: #e5e5e5; }
+    .ag-visit:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .ag-visit svg { width: 12px; height: 12px; transition: transform 0.25s ease; }
+    .ag-visit:hover svg { transform: translate(2px, -2px); }
+    .ag-desc {
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+      max-width: 34rem; padding-left: 15px; color: rgba(255, 255, 255, 0.88);
+      font-size: clamp(0.8rem, 1vw, 0.92rem); line-height: 1.55; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+    }
+    /* Hidden on collapsed slabs, revealed (staggered) on the open one */
+    .ag-bar, .ag-text, .ag-visit, .ag-desc { opacity: 0; transform: translateX(-14px); }
+    .ag-visit { visibility: hidden; }
+    .ag-bar, .ag-text, .ag-desc { transition: opacity 0.3s var(--ag-ease), transform 0.3s var(--ag-ease); }
+    .ag-panel.is-active .ag-bar, .ag-panel.is-active .ag-text, .ag-panel.is-active .ag-visit, .ag-panel.is-active .ag-desc { opacity: 1; transform: none; }
+    .ag-panel.is-active .ag-bar  { transition: opacity var(--ag-dur) var(--ag-ease), transform var(--ag-dur) var(--ag-ease); }
+    .ag-panel.is-active .ag-text { transition: opacity var(--ag-dur) var(--ag-ease) 0.06s, transform var(--ag-dur) var(--ag-ease) 0.06s; }
+    .ag-panel.is-active .ag-visit {
+      visibility: visible;
+      transition: background-color 0.2s ease, opacity var(--ag-dur) var(--ag-ease) 0.12s, transform var(--ag-dur) var(--ag-ease) 0.12s, visibility 0s linear 0s;
+    }
+    .ag-panel.is-active .ag-desc { transition: opacity var(--ag-dur) var(--ag-ease) 0.16s, transform var(--ag-dur) var(--ag-ease) 0.16s; }
+
+    /* Phones: slabs stack; every slab keeps its name visible, description sits at the bottom of the open one */
+    @media (max-width: 640px) {
+      .ag-label { justify-content: space-between; padding: 0 16px 14px; gap: 8px; }
+      .ag-row { height: 56px; flex: 0 0 auto; }
+      .ag-bar { display: none; }
+      .ag-text { opacity: 0.9; transform: none; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+      .ag-panel.is-active .ag-text { opacity: 1; }
+      .ag-desc { padding-left: 0; margin-top: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) { .accordion-gallery { --ag-dur: 0.01s; } }
   </style>
 </head>
 <body class="antialiased text-[#111] bg-[#FAFAFA]">
@@ -667,7 +790,8 @@
           <a href="#about" data-close data-section="about" style="--i:1">ABOUT ME<sup>02</sup></a>
           <a href="#experience" data-close data-section="experience" style="--i:2">EXPERIENCE<sup>03</sup></a>
           <a href="#certificates" data-close data-section="certificates" style="--i:3">CERTIFICATES<sup>04</sup></a>
-          <a href="#contact" data-close data-action="contact" data-section="contact" style="--i:4">CONTACT<sup>05</sup></a>
+          <a href="#websites" data-close data-section="websites" style="--i:4">WEBSITES<sup>05</sup></a>
+          <a href="#contact" data-close data-action="contact" data-section="contact" style="--i:5">CONTACT<sup>06</sup></a>
         </div>
       </div>
       <div class="menu-foot">
@@ -699,6 +823,7 @@
       <a id="nav-about" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#about">ABOUT ME</a>
       <a id="nav-experience" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#experience">EXPERIENCE</a>
       <a id="nav-certificates" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#certificates">CERTIFICATES</a>
+      <a id="nav-websites" class="nav-link px-4 py-2 rounded-full border border-transparent hover:border-neutral-200 hover:text-black transition whitespace-nowrap" href="#websites">WEBSITES</a>
     </nav>
 
     <!-- Right Social & Menu Links -->
@@ -789,15 +914,15 @@
 
         <!-- About info: revealed once the media is fully open -->
         <div id="sem-media-content" class="sem-content">
-<!-- Top Perimeter: headline level with the Dive In button, faint line beneath both -->
-<div>
-  <div style="height:2.75rem;display:flex;align-items:center;" class="pr-32 md:pr-44">
-    <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
-      PURSUING MY BACHELORS IN CSE-AIML
-    </h3>
-  </div>
-  <div style="height:1px;margin-top:0.75rem;background:rgba(255,255,255,0.12);"></div>
-</div>
+          <!-- Top Perimeter: headline level with the Dive In button, faint line beneath both -->
+          <div>
+            <div style="height:2.75rem;display:flex;align-items:center;" class="pr-32 md:pr-44">
+              <h3 class="text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-tight text-white max-w-xl">
+                PURSUING MY BACHELORS IN CSE-AIML
+              </h3>
+            </div>
+            <div style="height:1px;margin-top:0.75rem;background:rgba(255,255,255,0.12);"></div>
+          </div>
 
           <!-- Center Zone: open so the artwork stays unobscured -->
           <div class="flex-1 pointer-events-none min-h-[140px] md:min-h-[200px]"></div>
@@ -834,6 +959,7 @@
 
       <!-- Caption + scroll prompt -->
       <div class="sem-prompt">
+        <p id="sem-date">BACKGROUND &amp; VISION</p>
         <p id="sem-scroll-prompt"><span class="dot"></span>SCROLL TO EXPAND</p>
       </div>
 
@@ -1401,6 +1527,20 @@
 </section>
 <!-- END: Certificates Section -->
 
+<!-- BEGIN: Websites Section (Accordion Gallery) -->
+<section id="websites" class="sites-section" data-purpose="websites-section" aria-labelledby="sites-heading">
+  <div class="sites-inner">
+    <header class="sites-head">
+      <span class="sites-eyebrow">SELECTED WORK</span>
+      <h2 id="sites-heading" class="sites-title">WEBSITES</h2>
+      <p class="sites-intro">Sites I've built. Hover a panel to open it, then hit Visit Site to see the live version.</p>
+    </header>
+    <div id="sites-gallery" class="accordion-gallery" role="list" aria-label="My websites"></div>
+  </div>
+</section>
+<!-- END: Websites Section -->
+
+
 
 
 
@@ -1495,11 +1635,11 @@
       <form id="contact-form" onsubmit="submitContactForm(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Your Name</label>
-          <input type="text" id="contact-name" required placeholder="Bruce Wayne" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
+          <input type="text" id="contact-name" required placeholder="John Doe" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Email Address</label>
-          <input type="email" id="contact-email" required placeholder="batman@company.com" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
+          <input type="email" id="contact-email" required placeholder="john@company.com" class="w-full px-4 py-2.5 rounded-xl border border-neutral-300 focus:outline-none focus:border-black text-sm">
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-1">Purpose</label>
@@ -1899,6 +2039,7 @@
         'about': document.getElementById('nav-about'),
         'experience': document.getElementById('nav-experience'),
         'certificates': document.getElementById('nav-certificates'),
+        'websites': document.getElementById('nav-websites'),
       };
 
       const observer = new IntersectionObserver((entries) => {
@@ -2044,20 +2185,20 @@
      link   : credential / verify URL  (optional, shown in the large viewer)
      ============================================================ */
   const CERTIFICATES = [
-    { src: 'assets/certificates/cert-01.jpg', title: 'Build with AI', issuer: 'Google for Developers', date: 'October 2026', link: '' },
-    { src: 'assets/certificates/cert-02.png', title: 'Ethical Hacking and Cyber Security', issuer: 'VaultOfCodes', date: 'September 2026', link: '' },
-    { src: 'assets/certificates/cert-03.jpg', title: 'Website UI/UX Designing using ChatGPT', issuer: 'simplilearn', date: 'September 2026', link: '' },
-    { src: 'assets/certificates/cert-04.jpg', title: 'Introduction to Generative AI', issuer: 'simplilearn', date: 'June 2026', link: '' },
-    { src: 'assets/certificates/cert-05.jpg', title: 'Describe the concepts of CyberSecurity', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-06.jpg', title: 'Computer vision solutions in Azure', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-07.jpg', title: 'AI basics and Generative AI', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-08.jpg', title: 'Using Microsoft Copilot', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-09.jpg', title: 'Introduction to Microsoft security solutions', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-10.jpg', title: 'Security, compliance and identity concepts', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-11.jpg', title: 'Learn more on AI concepts', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-12.jpg', title: 'Microsoft 365 : Copilot chat', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-13.jpg', title: 'Everyday work with agents', issuer: 'Microsoft', date: 'May 2026', link: '' },
-    { src: 'assets/certificates/cert-14.png', title: 'NSPC 2026', issuer: 'Ministry of Education', date: 'September 2026', link: '' }
+    { src: 'assets/certificates/cert-01.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-02.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-03.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-04.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-05.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-06.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-07.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-08.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-09.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-10.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-11.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-12.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-13.jpg', title: '', issuer: '', date: '', link: '' },
+    { src: 'assets/certificates/cert-14.jpg', title: '', issuer: '', date: '', link: '' }
   ];
 
   (function () {
@@ -2245,6 +2386,120 @@
     // ---- Init ----
     updateUI(); paint(); goTo(0, false);
     window.addEventListener('load', function () { goTo(index, false); schedule(); });
+  })();
+  </script>
+  <!-- WEBSITES: accordion gallery (vanilla JS + CSS transitions) -->
+  <script>
+  /* ============================================================
+     EDIT HERE — one object per website panel (add or remove freely).
+     image : screenshot path, portrait ~900x1200 works best
+     label : site name   (empty shows "Website 01" etc.)
+     link  : the live URL — the "Visit Site" button only appears once this is filled in
+     desc  : short description shown under the name on the open panel (optional)
+     alt   : image description (optional)
+     ============================================================ */
+const WEBSITES = [
+    { image: 'assets/websites/site-01.png', label: '', link: 'https://sites.google.com/view/atharvamehta/home', desc: '', alt: '' },
+    { image: 'assets/websites/site-02.png', label: '', link: 'https://striq-project.vercel.app/', desc: '', alt: '' },
+    { image: 'assets/websites/site-03.png', label: '', link: '', desc: '', alt: '' },
+    { image: 'assets/websites/site-04.png', label: '', link: '', desc: '', alt: '' },
+    { image: 'assets/websites/site-05.png', label: '', link: '', desc: '', alt: '' }
+  ];
+  // Gallery settings (trigger: 'hover' | 'click')
+  const SITES_CFG = { defaultIndex: 2, expandRatio: 0.52, tilt: 8, parallax: 0.5, gap: 10, trigger: 'hover' };
+
+  (function () {
+    var root = document.getElementById('sites-gallery');
+    if (!root || !WEBSITES.length) return;
+    var N = WEBSITES.length, cfg = SITES_CFG;
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var name = function (i) { return WEBSITES[i].label || ('Website ' + String(i + 1).padStart(2, '0')); };
+    var mq = window.matchMedia('(max-width: 640px)');
+    var active = Math.min(Math.max(cfg.defaultIndex, 0), N - 1), vertical = mq.matches, mediaSize = 320, hoverTimer = 0;
+
+    root.style.setProperty('--ag-gap', cfg.gap + 'px');
+    root.innerHTML = WEBSITES.map(function (w, i) {
+      var visit = w.link ? '<a class="ag-visit" href="' + esc(w.link) + '" target="_blank" rel="noopener noreferrer" aria-label="Visit ' + esc(name(i)) + ' (opens in a new tab)"><span>Visit Site</span><svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" stroke-linecap="round" stroke-linejoin="round"/></svg></a>' : '';
+      var desc = w.desc ? '<span class="ag-desc">' + esc(w.desc) + '</span>' : '';
+      return '<div class="ag-panel' + (w.image ? '' : ' is-empty') + '" role="listitem" tabindex="0" data-i="' + i + '" aria-label="' + esc(name(i)) + '">' +
+        '<span class="ag-frame"><span class="ag-media">' +
+        (w.image ? '<img src="' + esc(w.image) + '" alt="' + esc(w.alt || name(i)) + '" loading="lazy" decoding="async" draggable="false">' : '') +
+        '</span><span class="ag-grad"></span><span class="ag-dim"></span><span class="ag-ph">' + esc(w.image || 'add an image path in WEBSITES') + '</span></span>' +
+        '<span class="ag-label"><span class="ag-row"><span class="ag-bar"></span><span class="ag-text">' + esc(name(i)) + '</span>' + visit + '</span>' + desc + '</span></div>';
+    }).join('');
+    var panels = Array.prototype.slice.call(root.children);
+    root.querySelectorAll('img').forEach(function (img) {
+      img.addEventListener('error', function () { img.closest('.ag-panel').classList.add('is-empty'); img.remove(); });
+    });
+
+    function layout() {
+      var r = Math.min(Math.max(cfg.expandRatio, 0.2), 0.9);
+      var grow = N > 1 ? (r * (N - 1)) / (1 - r) : 1;
+      panels.forEach(function (p, i) {
+        var on = i === active;
+        p.classList.toggle('is-active', on);
+        if (on) p.setAttribute('aria-current', 'true'); else p.removeAttribute('aria-current');
+        p.style.flexGrow = on ? grow : 1;
+        var rot = on ? 0 : (i < active ? cfg.tilt : -cfg.tilt);
+        p.style.transform = (vertical || !rot) ? 'none' : 'rotateY(' + rot + 'deg)';
+        var drift = Math.max(-1.5, Math.min(1.5, active - i));
+        var shift = on ? 0 : drift * cfg.parallax * mediaSize * 0.06;
+        var media = p.querySelector('.ag-media');
+        media.style.transform = 'translate(-50%, -50%) translate3d(' + (vertical ? 0 : shift) + 'px,' + (vertical ? shift : 0) + 'px,0)';
+        media.style.filter = on ? 'none' : 'grayscale(1)';
+      });
+    }
+    function measure(instant) {
+      var rect = root.getBoundingClientRect();
+      var total = vertical ? rect.height : rect.width;
+      var usable = Math.max(total - cfg.gap * (N - 1), 120);
+      mediaSize = Math.max(140, usable * Math.min(Math.max(cfg.expandRatio, 0.2), 0.9) * 1.22);
+      root.style.setProperty('--ag-media-size', mediaSize + 'px');
+      if (instant) {
+        root.classList.add('no-anim'); layout(); void root.offsetWidth;
+        requestAnimationFrame(function () { root.classList.remove('no-anim'); });
+      } else layout();
+    }
+    function activate(i) { if (i === active) return; active = i; layout(); }
+
+    panels.forEach(function (p, i) {
+      // Short hover-intent delay so sweeping the mouse across panels doesn't thrash the layout
+      p.addEventListener('pointerenter', function (e) {
+        if (cfg.trigger !== 'hover' || e.pointerType !== 'mouse') return;
+        clearTimeout(hoverTimer); hoverTimer = setTimeout(function () { activate(i); }, 70);
+      });
+      p.addEventListener('pointerleave', function () { clearTimeout(hoverTimer); });
+      p.addEventListener('click', function (e) { if (!e.target.closest('.ag-visit')) activate(i); });
+      p.addEventListener('focus', function () { activate(i); });
+      p.addEventListener('keydown', function (e) {
+        var k = e.key, d = (k === 'ArrowRight' || k === 'ArrowDown') ? 1 : (k === 'ArrowLeft' || k === 'ArrowUp') ? -1 : 0;
+        if (!d) return;
+        e.preventDefault(); panels[(i + d + N) % N].focus();
+      });
+    });
+
+    // When the mouse leaves the gallery, settle back to the default panel
+    var leaveTimer = 0;
+    root.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') clearTimeout(leaveTimer); });
+    root.addEventListener('pointerleave', function (e) {
+      if (cfg.trigger !== 'hover' || e.pointerType !== 'mouse') return;
+      clearTimeout(hoverTimer); clearTimeout(leaveTimer);
+      leaveTimer = setTimeout(function () {
+        if (root.contains(document.activeElement) && document.activeElement !== document.body) document.activeElement.blur();
+        activate(Math.min(Math.max(cfg.defaultIndex, 0), N - 1));
+      }, 150);
+    });
+
+    measure(true);
+    var lastW = 0, lastH = 0;
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function () {
+        var w = root.clientWidth, h = root.clientHeight;
+        if (w !== lastW || h !== lastH) { lastW = w; lastH = h; measure(true); }
+      }).observe(root);
+    }
+    var onMq = function () { vertical = mq.matches; measure(true); };
+    if (mq.addEventListener) mq.addEventListener('change', onMq); else mq.addListener(onMq);
   })();
   </script>
   <!-- MENU: "Dive In" button + slide-in panel -->
