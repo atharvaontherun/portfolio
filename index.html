@@ -448,6 +448,97 @@
 </head>
 <body class="antialiased text-[#111] bg-[#FAFAFA]">
 
+  <!-- ============ LOADING SCREEN (paste right after the opening <body ...> tag) ============ -->
+<style>
+  html.is-loading { overflow: hidden; }
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: #FAFAFA; color: #111;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    transition: transform 900ms cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  #loader.is-done { transform: translateY(-100%); }
+  .loader-inner {
+    display: flex; flex-direction: column; align-items: center;
+    transition: opacity 350ms ease, transform 350ms ease;
+  }
+  #loader.is-done .loader-inner { opacity: 0; transform: translateY(-12px); }
+  .loader-count {
+    font-size: clamp(5rem, 16vw, 9rem); font-weight: 800; line-height: 1;
+    letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #0b0b0b 0%, #2c2c2c 35%, #7d7d7d 55%, #1a1a1a 80%, #0b0b0b 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .loader-name {
+    margin-top: 1.5rem; font-size: clamp(0.7rem, 1.6vw, 0.95rem); font-weight: 600;
+    letter-spacing: 0.5em; padding-left: 0.5em;
+    text-transform: uppercase; color: #737373;
+  }
+  .loader-bar {
+    margin-top: 1.5rem; width: min(70vw, 375px); height: 2px; background: #dcdcdc; overflow: hidden;
+  }
+  .loader-bar span {
+    display: block; height: 100%; width: 100%; background: #111;
+    transform: scaleX(0); transform-origin: left center;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #loader { transition: opacity 300ms ease; }
+    #loader.is-done { transform: none; opacity: 0; }
+  }
+</style>
+
+<div id="loader" role="status" aria-live="polite" aria-label="Loading">
+  <div class="loader-inner">
+    <div class="loader-count" id="loader-count">0</div>
+    <div class="loader-name">ATHARVA MEHTA</div>
+    <div class="loader-bar"><span id="loader-bar"></span></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var loader = document.getElementById('loader');
+  var countEl = document.getElementById('loader-count');
+  var barEl = document.getElementById('loader-bar');
+  if (!loader) return;
+  root.classList.add('is-loading');
+
+  var MIN_MS = 1400;     // shortest time the loader stays visible
+  var MAX_MS = 7000;     // safety: never trap the visitor
+  var start = performance.now();
+  var pageLoaded = document.readyState === 'complete';
+  var shown = 0, finished = false;
+  window.addEventListener('load', function () { pageLoaded = true; });
+
+  function finish() {
+    if (finished) return; finished = true;
+    loader.classList.add('is-done');
+    root.classList.remove('is-loading');
+    setTimeout(function () { loader.remove(); }, 1000);
+  }
+
+  function tick(now) {
+    var elapsed = now - start;
+    var target = pageLoaded ? 100 : Math.min(90, (elapsed / 2500) * 90);
+    shown += (target - shown) * 0.08;
+    if (pageLoaded && target - shown < 0.5) shown = 100;
+    countEl.textContent = Math.min(100, Math.round(shown));
+    barEl.style.transform = 'scaleX(' + (shown / 100).toFixed(3) + ')';
+    if ((shown >= 100 && elapsed >= MIN_MS) || elapsed >= MAX_MS) {
+      countEl.textContent = 100; barEl.style.transform = 'scaleX(1)';
+      setTimeout(finish, 250);
+      return;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+<!-- ============ END LOADING SCREEN ============ -->
+ 
   <!-- Notification Toast Container -->
   <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
